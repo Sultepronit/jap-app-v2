@@ -10,7 +10,7 @@ p {
 header {
 	position: fixed;
 	top: 0;
-	width: 98%;
+	width: 97%;
 	background-color: white;
 }
 
@@ -57,7 +57,7 @@ footer {
 	/*position: sticky;*/
 	position: fixed;
 	bottom: 0;
-	width: 100%;
+	width: 99%;
 	/*margin-top: 20em;*/
 	padding-top: 1em;
 	padding-bottom: 2em;
