@@ -1,0 +1,195 @@
+﻿<!DOCTYPE html >
+<html>
+<head>
+	<title>New kanji!</title>
+	<meta charset="utf-8" />
+	
+	<script src="wanakana.js"></script>
+	
+	<script src="jinmeiyou.js"></script>
+	<script src="app.js"></script>
+	<script src="db/kanji.js"></script>
+	<script src="db/words.js"></script>
+	<script src="db/jooyoo.js"></script>
+	<script src="db/key.js"></script>
+	<script src="word-functions.js"></script>
+	<script src="jquery-3.6.4.js"></script>
+
+</head>
+
+<body>
+
+<script type="text/javascript">
+var jlpt =  "勿尤只叩叱此伊吊吠忽於或其茹殆剃咳垢這紐壷蛋惚梢喧稀揃貰覗筈壺碗溜馳嘩蒔鞄嘘噌賑撫蝶噂噛嬉撒髭濡霞醤蘇";
+
+var knownKanji = new Set();
+var unknownKanji = new Map();
+
+function printSection(kanji, card) {
+	document.write('{"s":0,"f":0,"b":0,"ff":0,"bb":0,"k":"');
+	document.write(kanji);
+	document.write('", "n": "-", "d": "');
+	document.write(card.d);
+	document.write('", "r": "');
+	document.write(card.r);
+	document.write('", "c": "');
+	document.write(card.c);
+	//if(card.c > 9) document.write('!!!');
+	document.write('", "j": ');
+	document.write(card.j);
+	document.write(', "ky": ');
+	document.write(card.ky);
+	document.write('}');
+	document.write('<b> // ');
+	document.write(card.words);
+	document.write('</b><br>');
+}
+
+function print() {
+	// jooyoo, several words
+	document.write('<div contenteditable>');
+	for(let kanji of unknownKanji.keys()) {
+		var card = unknownKanji.get(kanji);
+		if(card.j > 0 && card.n > 1) {
+			printSection(kanji, card);
+			//unknownKanji.delete(kanji);
+		}
+	}
+	document.write('</div>');
+	
+	// jooyoo, one word
+	document.write('<div contenteditable>');
+	for(let kanji of unknownKanji.keys()) {
+		var card = unknownKanji.get(kanji);
+		if(card.j > 0) {
+			printSection(kanji, card);
+			unknownKanji.delete(kanji);
+		}
+	}
+	document.write('</div>');
+	
+	// others
+	document.write('<div contenteditable>');
+	for(let kanji of unknownKanji.keys()) {
+		var card = unknownKanji.get(kanji);
+		if(card.n > 1) {
+			printSection(kanji, card);
+			unknownKanji.delete(kanji);
+		}
+	}
+	document.write('</div>');
+	
+	for(let kanji of unknownKanji.keys()) {
+		document.write(kanji);
+	}
+	
+}
+
+function findKey(keySymbol) {
+	//console.log(keySymbol);
+	var r = 0;
+	loop1:for(; r < key.length; r++) {
+		if(keySymbol == key[r][0][0]) break;
+		if(key[r][0].length > 1) {
+			//console.log(key[r][0]);
+			for(var y = 1; y < key[r][0].length; y++) {
+				if(keySymbol == key[r][0][y]) { 
+					break loop1;
+				}
+			}
+		}
+	}
+	//console.log(r);
+	return r;
+}
+
+function checkJooyoo() {
+	for(let kanji of unknownKanji.keys()) {
+		//console.log(kanji);
+		var card = unknownKanji.get(kanji);
+		for(var i = 1; i < jooyoo.length; i++) {
+			if(kanji == jooyoo[i][0]) {
+				//console.log('Joy!');
+				//var card = unknownKanji.get(kanji);
+				card.j = i;
+				card.r = jooyoo[i][3];
+				card.c = jooyoo[i][5];
+				card.ky = findKey(jooyoo[i][2]);
+				card.d = key[ card.ky ][4];
+				//console.log(card);
+				break;
+			}
+		}
+		if(card.j == 0) {
+			//console.log(card);
+			for(let jmk of jinMeiYou) {
+				if(kanji == jmk) {
+					card.c = '人名';
+				}
+			}
+			for(let jk of jlpt) {
+				if(kanji == jk) {
+					card.c = (card.c == '?') ? 'jlpt' : card.c + '-jlpt';
+				}
+			}
+		}
+	}
+	
+	print();
+}
+
+function getNew() {
+	wordsDb.forEach((word) => {
+		//console.log(word.w);
+		var fromOne = processWritings(word).mainKanji;
+		//console.log(fromOne);
+		
+		for(let kanji of fromOne) {
+			//console.log(kanji);
+			if(!knownKanji.has(kanji)) {
+				if(unknownKanji.has(kanji)) { // next words
+					var card = unknownKanji.get(kanji);
+					card.words += ' | ' + word.w + ' : ' + word.tsc;
+					card.n++;
+					//console.log(card);
+					unknownKanji.set(kanji, card);
+				} else { // frist word
+					document.write(kanji);
+					var card = {
+						words: (word.w + ' : ' + word.tsc),
+						n: 1,
+						d: '?',
+						r: '?',
+						c: '?',
+						j: 0,
+						ky: '?'
+					};
+					//unknownKanji.set(kanji, [word.w + ' : ' + word.tsc]);
+					unknownKanji.set(kanji, card);
+				}
+			}
+		}
+		
+	});
+	console.log(unknownKanji);
+	checkJooyoo();
+}
+
+function getKnown()
+{
+	//console.log("hello!");
+	kanjiDb.forEach((element) => {
+		//console.log(element.k);
+		knownKanji.add(element.k);
+	});
+	//console.log(knownKanji);
+	
+	getNew();
+}
+
+getKnown();
+
+</script>
+<!--<p class="super">super</p>-->
+</body>
+</html>

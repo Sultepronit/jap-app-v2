@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+
+	<h1>X-GIF Tests</h1>
+
+	<div>
+	  <label>IMG Tag, Plays Once Only When Not Cached</label>
+	  <img src="https://s3.amazonaws.com/heather-codepen/extfront.gif" />
+	</div>
+
+
+	<div>
+	  <label>X-GIF Stopped, Click to Play</label>
+	  <x-gif debug src="https://s3.amazonaws.com/heather-codepen/extfront.gif"></x-gif>
+	</div>
+
+	<div>
+	  <label>X-GIF Stopped 0.1 Frames In, Plays After 5 Secs</label>
+	  <x-gif class="playme" n-times="0.1" src="https://s3.amazonaws.com/heather-codepen/extfront.gif"></x-gif>
+	</div>
+
+</html>
