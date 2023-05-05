@@ -101,16 +101,47 @@ function implementEvaluation(mark) {
 			break;
 		default: // GOOD || BEST
 			plus++;
-			if(cardStatus === 'PROBLEM') {
-				currentCard[1]++;
-				if(currentCard[1] < -1) currentCard = -1;
-				toCell(currentCardId + 1, 'B', currentCard[1]);
-			} else {
+			
+			if(mark === 'BEST' && currentCard[1] == 0) {
 				repeated++;
 				upgradeCard();
+				toCell(currentCardId + 1, 'D', 2);
+			} else { // good*
+				currentCard[1]++;
 				
-				if(mark === 'BEST') toCell(currentCardId + 1, 'D', 2);
+				if(currentCard[1] > 1) {
+					currentCard[1] = 0;
+					repeated++;
+					upgradeCard();
+				} else if(currentCard[1] < -1) {
+					currentCard[1] = -1;
+				}
+				
+				toCell(currentCardId + 1, 'B', currentCard[1]);
 			}
+			
+			/*if(cardStatus === 'PROBLEM' || currentCard[1] == 1) {
+				currentCard[1]++;
+				
+				if(currentCard[1] > 1) {
+					currentCard[1] = 0;
+					repeated++;
+					upgradeCard();
+				} else if(currentCard[1] < -1) {
+					currentCard[1] = -1;
+				}
+				
+				toCell(currentCardId + 1, 'B', currentCard[1]);
+			} else {
+				if(mark === 'GOOD') {
+					currentCard[1]++;
+					toCell(currentCardId + 1, 'B', currentCard[1]);
+				} else { // BEST
+					repeated++;
+					upgradeCard();
+					toCell(currentCardId + 1, 'D', 2);
+				}
+			}*/
 			
 			break;
 	}
@@ -225,7 +256,6 @@ getKanji();
 var main = function () {
 	//nextCard();
 	 
-	// $('.show').on('click', showAnswer());
 	$('.show').on('click', function(){showAnswer();});
 	$('.best').on('click', function(){evaluate('BEST');});
 	$('.good').on('click', function(){evaluate('GOOD');});
