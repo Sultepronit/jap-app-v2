@@ -120,29 +120,6 @@ function implementEvaluation(mark) {
 				toCell(currentCardId + 1, 'B', currentCard[1]);
 			}
 			
-			/*if(cardStatus === 'PROBLEM' || currentCard[1] == 1) {
-				currentCard[1]++;
-				
-				if(currentCard[1] > 1) {
-					currentCard[1] = 0;
-					repeated++;
-					upgradeCard();
-				} else if(currentCard[1] < -1) {
-					currentCard[1] = -1;
-				}
-				
-				toCell(currentCardId + 1, 'B', currentCard[1]);
-			} else {
-				if(mark === 'GOOD') {
-					currentCard[1]++;
-					toCell(currentCardId + 1, 'B', currentCard[1]);
-				} else { // BEST
-					repeated++;
-					upgradeCard();
-					toCell(currentCardId + 1, 'D', 2);
-				}
-			}*/
-			
 			break;
 	}
 }
@@ -173,12 +150,15 @@ for(let word of wordsDb) {
 }
 
 function prepareSession() {
+	var superKanji = 0;
 	maxToRepeat = kanjiSheet[5][5];
 	nextRepeated = kanjiSheet[1][5]
 	//console.log(maxToRepeat);
 	//console.log(nextRepeated);
 	
 	for(var i = 0; i < kanjiSheet.length; i++) {
+		if(kanjiSheet[i][3] > 0) superKanji++;
+		
 		if(kanjiSheet[i][1] < 0) {
 			kanjiWithMistakes.push(i);
 			//console.log(kanjiSheet[i]);
@@ -189,6 +169,8 @@ function prepareSession() {
 			kanjiToRepeat.push(i);
 		}
 	}
+	var prc = Math.round(superKanji / kanjiSheet.length * 1000) / 10;
+	console.log(superKanji + ': ' + prc + '%');
 	console.log(kanjiWithMistakes);
 	console.log(kanjiToRepeat);
 	
