@@ -971,7 +971,7 @@
 "これはシルクの感触だ。- This feels like silk.",
 "彼女は何てきれいなんだ。— How beautiful she is!",
 "彼はアルコールを一切飲まない。— He never drinks alcohol.",
-
+"すこぶる元気だった — [he] was quite well",
 
 
 ];
